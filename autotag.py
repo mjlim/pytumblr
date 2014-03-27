@@ -128,7 +128,7 @@ if __name__ == '__main__':
                         print "the origin post has no tags, skipping."
                     continue
 
-                newtags.insert(0, u'auto-tag')
+                newtags.insert(0, u'tags copied from source automatically')
                 if debug_messages:
                     print newtags
 
