@@ -1,3 +1,12 @@
+# autotag
+
+Uses pytumblr to automatically assign tags to your most recent posts. Edit blogname on line 12 to correspond to your blog name, then just run the client
+```
+$ python autotag.py
+```
+
+Tags will be copied from the original post that the reblog came from. You can create rules to disallow certain tags by modifying the tag_allowed function. If that function returns False then the tag will not be included.
+
 # PyTumblr
 
 [![Build Status](https://travis-ci.org/tumblr/pytumblr.png?branch=master)](https://travis-ci.org/tumblr/pytumblr)
