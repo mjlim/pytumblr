@@ -16,6 +16,8 @@ def tag_allowed(tag):
         return False
     return True
 
+debug_messages = False
+
 # END CONFIG
 
 def new_oauth(yaml_path):
@@ -99,10 +101,12 @@ if __name__ == '__main__':
                 # has a source; was a reblog
                 source_url = post[u'source_url']
                 source_url_split = source_url.split('/')
-                print source_url
-                print source_url_split
+                if debug_messages:
+                    print source_url
+                    print source_url_split
                 if len(source_url_split) < 4:
-                    print "skipping because url not long enough" 
+                    if debug_messages:
+                        print "skipping because url not long enough" 
                     continue
 
                 src_blog_name = source_url_split[2]
@@ -111,7 +115,8 @@ if __name__ == '__main__':
                 src_blog = client.posts(src_blog_name, id=int(src_post_id))
 
                 if u'posts' not in src_blog:
-                    print "origin post was deleted :("
+                    if debug_messages:
+                        print "origin post was deleted :("
                     continue
 
                 src_blog_post = src_blog[u'posts'][0]
@@ -119,18 +124,22 @@ if __name__ == '__main__':
                 newtags = [t for t in src_blog_post[u'tags'] if tag_allowed(t)]
 
                 if newtags == []:
-                    print "the origin post has no tags, skipping."
+                    if debug_messages:
+                        print "the origin post has no tags, skipping."
                     continue
 
                 newtags.insert(0, u'auto-tag')
-                print newtags
+                if debug_messages:
+                    print newtags
 
                 # update the original post
                 mypost_id = post[u'id']
                 returned = client.edit_post(blogname, id=int(mypost_id), tags=newtags)
-                print "ret:", returned
+                if debug_messages:
+                    print "ret:", returned
 
 
                 # done update
 
-        print post[u'tags']
+        if debug_messages:
+            print post[u'tags']
