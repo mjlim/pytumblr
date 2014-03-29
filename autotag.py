@@ -103,6 +103,7 @@ def new_oauth(yaml_path):
 
 # concise way to add toggleable debug messages
 def debug_msg(msg):
+    global debug_messages
     if debug_messages:
         print msg
 
@@ -251,7 +252,7 @@ if __name__ == '__main__':
     args = argparser.parse_args()
 
     # load args into config variables. todo: design a better way to deal with these config vars
-    debug_message = args.debug_messages
+    debug_messages = args.debug_messages
     commit_new_tags = args.dont_commit_tags
     num_posts_to_read = args.num_posts_to_tag
     redo_autotags = args.redo_autotags
@@ -293,26 +294,23 @@ if __name__ == '__main__':
                 break
             num_posts_read += 1
             tags = post[u'tags']
-            if tags == [] or (redo_autotags and u'auto-tagged' in tags):
+            if tags == [] or (redo_autotags and u'autotagged' in tags):
                 debug_msg("looking for tags for this post: {}".format(post[u'post_url']))
                 # no tags assigned to this post
 
                 newtags = []
                 threshold = start_threshold
                 tagdict = get_reblog_chain_tags(post, max_notes_read=num_notes_origin, recurse_depth=reblog_recursion_depth)
-                print tagdict
-
                 # if no tags meet the cutoff, reduce threshold until there are tags to assign.
                 while newtags == [] and threshold > 0 and threshold >= min_threshold:
                     newtags = get_tags_over_threshold(tagdict,threshold)
                     threshold -= 1
-                print newtags
 
                 if commit_new_tags:
                     if newtags == []:
                         debug_msg("No new tags found")
                         continue
-                    newtags.insert(0, u'auto-tagged')
+                    newtags.insert(0, u'autotagged')
 
                     ret = update_post_tags(args.blogname, post[u'id'], newtags)
                     num_posts_tagged += 1
