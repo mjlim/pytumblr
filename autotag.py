@@ -304,7 +304,7 @@ if __name__ == '__main__':
                         continue
                     newtags.insert(0, u'auto-tagged')
 
-                    ret = update_post_tags(blogname, post[u'id'], newtags)
+                    ret = update_post_tags(args.blogname, post[u'id'], newtags)
                     num_posts_tagged += 1
                     debug_msg("committed change, return val {}".format(ret))
     debug_msg("Finished. Your posts read: {}. Your posts tagged: {}.".format(num_posts_read, num_posts_tagged))
