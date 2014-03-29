@@ -6,6 +6,7 @@ import os
 import argparse
 import urlparse
 import code
+import traceback
 import oauth2 as oauth
 
 # BEGIN CONFIG
@@ -32,7 +33,7 @@ def tag_bypass_threshold(tag):
 
     return False
 
-debug_messages = True
+debug_messages = False
 commit_new_tags = True
 num_posts_to_read = 20
 redo_autotags = False
@@ -173,18 +174,22 @@ def get_reblog_chain_tags(mypost, max_notes_read=50, recurse_depth=35):
 def get_post(ref, reblog_info=False, notes_info=False):
     (blogname, postid) = ref
     # todo: make this more elegant
-    if notes_info and reblog_info:
-        blog = client.posts(blogname, id=postid, reblog_info='true', notes_info='true')
-    elif notes_info:
-        blog = client.posts(blogname, id=postid, notes_info='true')
-    elif reblog_info:
-        blog = client.posts(blogname, id=postid, reblog_info='true')
-    else:
-        blog = client.posts(blogname, id=postid)
-    if u'posts' not in blog:
-        debug_msg("post not found")
-        return False # post not found
-    return blog[u'posts'][0]
+    try:
+        if notes_info and reblog_info:
+            blog = client.posts(blogname, id=postid, reblog_info='true', notes_info='true')
+        elif notes_info:
+            blog = client.posts(blogname, id=postid, notes_info='true')
+        elif reblog_info:
+            blog = client.posts(blogname, id=postid, reblog_info='true')
+        else:
+            blog = client.posts(blogname, id=postid)
+        if u'posts' not in blog:
+            debug_msg("post not found")
+            return False # post not found
+        return blog[u'posts'][0]
+    except Exception, err:
+        print "Exception when trying to get post:", traceback.format_exc()
+        return False
 
 def get_next_post_ref(post):
     if u'reblogged_from_name' in post and u'reblogged_from_id' in post:
@@ -276,7 +281,12 @@ if __name__ == '__main__':
     num_posts_tagged = 0
     while num_posts_read < num_posts_to_read and posts != []:
         debug_msg("requesting posts")
-        posts = client.posts(args.blogname, reblog_info='true', offset=num_posts_read)[u'posts']
+        try:
+            posts = client.posts(args.blogname, reblog_info='true', offset=num_posts_read)[u'posts']
+        except Exception, err:
+            print "Exception when trying to get your posts:", traceback.format_exc()
+            break
+
 
         for post in posts:
             if num_posts_read >= num_posts_to_read:
