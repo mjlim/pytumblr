@@ -1,11 +1,42 @@
 # autotag
 
-Uses pytumblr to automatically assign tags to your most recent posts. Edit blogname on line 12 to correspond to your blog name, then just run the client
+Uses pytumblr to automatically assign tags to your most recent posts. 
 ```
-$ python autotag.py
+$ python autotag.py -h
+Automatically tag posts on Tumblr.
+
+positional arguments:
+  blogname              The name of your blog (name.tumblr.com or a custom
+                        domain)
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -D, --debug-messages  Display debug messages
+  -c, --dont-commit-tags
+                        Don't write new tags to posts
+  -n NUM_POSTS_TO_TAG, --num-posts-to-tag NUM_POSTS_TO_TAG
+                        How many of your posts to be tagged, starting from the
+                        most recent
+  -r, --redo-autotags   Reassign tags for posts that have previously been
+                        autotagged
+  --start-threshold START_THRESHOLD
+                        the number of times a tag should appear before it is
+                        included on a post. will step down towards min-
+                        threshold if no tags are found at this level. default
+                        3.
+  --min-threshold MIN_THRESHOLD
+                        the minimum number of times a tag should appear before
+                        it is used on a post. default 3
+  -d REBLOG_RECURSION_DEPTH, --reblog-recursion-depth REBLOG_RECURSION_DEPTH
+                        The maximum number of reblogs to follow up the chain
+                        from the post you reblogged. Increases runtime but can
+                        yield better results.
+  -N NUM_NOTES_ORIGIN, --num-notes-origin NUM_NOTES_ORIGIN
+                        The maximum number of notes at the origin to look at
 ```
 
-Tags will be copied from the original post that the reblog came from. You can create rules to disallow certain tags by modifying the tag_allowed function. If that function returns False then the tag will not be included.
+You can create rules to handle certain tags (exclude or always include) by modifying the functions near the top of autotag.py. You can also add bias towards or against tags from certain blogs in the blog_tag_weight dict.
+
 
 # PyTumblr
 
